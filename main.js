@@ -13,12 +13,50 @@ function buildTile(color) {
 
     element.classList.add("tile");
     element.setAttribute("data-color", color);
-    /* element.setAttribute("data-revealed", "false"); */
+    element.setAttribute("data-revealed", "false");
 
     element.addEventListener("click", () => {
-        if (awaitingEndOfMove) {
+        const revealed = element.getAttribute("data-revealed");
+
+        if (awaitingEndOfMove || revealed === "true" || element === activeTile) {
             return;
         }
+
+        element.style.backgroundColor = color;
+
+        if (!activeTile) {
+            activeTile = element;
+
+            return;
+        }
+
+        const colorToMatch = activeTile.getAttribute("data-color");
+
+        if (colorToMatch === color) {
+            activeTile.setAttribute("data-revealed", "true");
+            element.setAttribute("data-revealed", "true");
+
+            awaitingEndOfMove = false;
+            activeTile = null;
+            revealCount += 2;
+
+            if (revealCount === tilesCount) {
+                alert("You win! Refresh t play again.");
+            }
+
+            return;
+        }
+
+
+        awaitingEndOfMove = true;
+
+        setTimeout(() => {
+            element.style.backgroundColor = null;
+            activeTile.style.backgroundColor = null;
+
+            awaitingEndOfMove = false;
+            activeTile = null;
+        }, 1000);
     });
 
     return element;
@@ -37,4 +75,4 @@ for (let i = 0; i < tilesCount; i++) {
 }
 
 // https://www.youtube.com/watch?v=bznJPt4t_4s
-// 17:30
+// 26:00
